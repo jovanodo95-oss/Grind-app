@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>GRIND — Jovan's Fitness Tracker</title>
+<meta name="theme-color" content="#FF6B00"/>
+<meta name="description" content="Personal fitness tracker — track every rep, build the habit, become unstoppable."/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="GRIND"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:     #0a0a0a;
+  --bg2:    #0e0e0e;
+  --surf:   #141414;
+  --card:   #1a1a1a;
+  --card2:  #1e1e1e;
+  --bdr:    rgba(255,255,255,0.08);
+  --bdr2:   rgba(255,255,255,0.14);
+  --orange: #FF6B00;
+  --orange2:rgba(255,107,0,0.12);
+  --orange3:rgba(255,107,0,0.06);
+  --txt:    #ffffff;
+  --txt2:   #9a9a9a;
+  --txt3:   #555555;
+  --green:  #34d399;
+  --green2: rgba(52,211,153,0.08);
+  --blue:   #60a5fa;
+  --blue2:  rgba(96,165,250,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;overflow-x:hidden;}
+body{background:var(--bg);color:var(--txt);font-family:Inter,sans-serif;min-height:100vh;font-size:16px;-webkit-font-smoothing:antialiased;}
+
+/* ─── PAGES ─── */
+.page{display:none;min-height:100vh;padding-bottom:90px;}
+.page.active{display:block;animation:pgIn .35s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(10,10,10,0.97);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-around;
+  height:72px;padding-bottom:env(safe-area-inset-bottom);
+}
+.bnav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:transparent;border:none;cursor:pointer;
+  padding:8px 20px;flex:1;
+  font-family:Inter,sans-serif;font-size:11px;font-weight:500;
+  color:var(--txt3);transition:color .2s;
+}
+.bnav-btn.active{color:var(--orange);}
+.bnav-btn svg{width:22px;height:22px;stroke-width:1.8;}
+
+/* ─── HERO ─── */
+.hero{padding:56px 24px 32px;position:relative;overflow:hidden;}
+.hero-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(70% 50% at 50% -10%,rgba(255,107,0,.12) 0%,transparent 65%),
+    radial-gradient(40% 30% at 80% 80%,rgba(255,107,0,.05) 0%,transparent 55%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);
+  border-radius:999px;padding:6px 14px;margin-bottom:28px;
+  opacity:0;animation:fu .5s .1s ease forwards;
+}
+.hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero-badge-text{font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--orange);text-transform:uppercase;}
+.hero-name{
+  font-family:'Bebas Neue',sans-serif;line-height:.9;
+  letter-spacing:3px;margin-bottom:24px;
+  opacity:0;animation:fu .5s .2s ease forwards;
+}
+.hero-name .l1{font-size:clamp(68px,20vw,110px);display:block;color:#fff;}
+.hero-name .l2{font-size:clamp(68px,20vw,110px);display:block;color:var(--orange);}
+.hero-name .l3{font-size:clamp(28px,8vw,44px);display:block;color:var(--txt3);letter-spacing:8px;}
+.hero-sub{
+  font-size:14px;color:var(--txt2);line-height:1.7;max-width:320px;
+  opacity:0;animation:fu .5s .3s ease forwards;margin-bottom:32px;
+}
+.hero-stats{
+  display:flex;gap:2px;margin-bottom:28px;
+  opacity:0;animation:fu .5s .35s ease forwards;
+}
+.hstat{
+  flex:1;background:var(--card);border:1px solid var(--bdr);
+  padding:14px 10px;text-align:center;
+}
+.hstat:first-child{border-radius:12px 0 0 12px;}
+.hstat:last-child{border-radius:0 12px 12px 0;}
+.hstat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--orange);}
+.hstat-lbl{font-size:10px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.hero-cta{opacity:0;animation:fu .5s .4s ease forwards;}
+.btn-p{
+  width:100%;padding:16px;
+  background:var(--orange);color:#0a0a0a;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;
+  border:none;border-radius:999px;cursor:pointer;transition:.2s;
+  box-shadow:0 4px 24px rgba(255,107,0,.3);
+}
+.btn-p:active{transform:scale(.98);}
+@keyframes fu{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── HOME BODY ─── */
+.home-body{padding:0 20px;}
+.sec-hdr{
+  font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:10px;
+}
+.sec-hdr::after{content:'';flex:1;height:1px;background:var(--bdr);}
+
+/* Snapshot Card */
+.snap-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.snap-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.snap-week{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;}
+.snap-phase{font-size:11px;color:var(--txt3);letter-spacing:.5px;margin-top:3px;}
+.snap-pct{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;color:var(--orange);flex-shrink:0;}
+.snap-bar-wrap{height:6px;background:var(--bdr2);border-radius:99px;overflow:hidden;margin-bottom:14px;}
+.snap-bar{height:100%;background:var(--orange);border-radius:99px;transition:width .6s ease;}
+.snap-days{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.snap-dot{width:10px;height:10px;border-radius:3px;transition:background .3s;}
+.snap-dot-lbl{font-size:11px;color:var(--txt3);}
+.snap-go{
+  width:100%;margin-top:16px;padding:13px;
+  background:var(--orange);color:#0a0a0a;
+  font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2.5px;
+  border:none;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.snap-go:active{transform:scale(.98);}
+
+/* Monthly Mini */
+.month-mini{
+  background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+  padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.mm-dot{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;
+}
+.mm-body{flex:1;min-width:0;}
+.mm-name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.badge-cur{
+  font-size:9px;font-weight:700;background:var(--orange2);color:var(--orange);
+  padding:2px 7px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;
+}
+.mm-bar-wrap{height:4px;background:var(--bdr2);border-radius:99px;overflow:hidden;margin-top:7px;}
+.mm-bar{height:100%;border-radius:99px;}
+.mm-pct{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;flex-shrink:0;}
+
+/* ─── WORKOUT PAGE ─── */
+.wk-wrap{padding:20px 16px 0;}
+.wk-hdr{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--bdr);}
+.wk-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;}
+.wk-title span{color:var(--orange);}
+.wk-phase{font-size:11px;font-weight:500;color:var(--txt3);letter-spacing:.5px;margin-top:4px;}
+
+/* Progress */
+.prog-wrap{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+  padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.prog-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--txt3);text-transform:uppercase;white-space:nowrap;}
+.prog-track{flex:1;height:6px;background:var(--bdr2);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--orange);border-radius:99px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.prog-pct{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--orange);min-width:50px;text-align:right;}
+
+/* Tabs */
+.scroll-tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
+.scroll-tabs::-webkit-scrollbar{display:none;}
+.wtab{
+  flex-shrink:0;padding:9px 16px;border:1px solid var(--bdr);border-radius:10px;
+  background:transparent;color:var(--txt3);
+  font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;cursor:pointer;transition:.2s;text-align:center;
+}
+.wtab .wn{font-size:18px;display:block;line-height:1;}
+.wtab .ws{font-size:9px;display:block;margin-top:2px;font-family:Inter,sans-serif;font-weight:500;letter-spacing:.5px;}
+.wtab:hover{border-color:rgba(255,107,0,.35);color:var(--txt);}
+.wtab.active{border-color:var(--orange);background:var(--orange2);color:var(--orange);}
+.dtab{
+  flex-shrink:0;padding:6px 15px;border:1px solid var(--bdr);border-radius:99px;
+  background:transparent;color:var(--txt3);
+  font-size:12px;font-weight:500;cursor:pointer;transition:.2s;
+}
+.dtab:hover{border-color:var(--bdr2);color:var(--txt);}
+.dtab.active{border-color:var(--orange);background:var(--orange2);color:var(--orange);}
+.dtab.done{border-color:var(--green);background:var(--green2);color:var(--green);}
+.dtab.rest{border-color:rgba(255,107,0,.25);background:var(--orange3);color:var(--orange);}
+
+/* Day View */
+.dview{animation:pgIn .28s ease;}
+.day-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bdr);gap:10px;}
+.day-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1.5px;line-height:1.05;}
+.day-meta{font-size:11px;font-weight:500;color:var(--txt3);letter-spacing:.3px;margin-top:4px;}
+.day-bdg{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 12px;border-radius:7px;background:var(--surf);border:1px solid var(--bdr);color:var(--txt3);transition:.3s;flex-shrink:0;white-space:nowrap;}
+.day-bdg.done{background:var(--green2);border-color:rgba(52,211,153,.35);color:var(--green);}
+
+/* Rest Card */
+.rest-card{
+  background:linear-gradient(135deg,rgba(255,107,0,.07),rgba(255,107,0,.02));
+  border:1px solid rgba(255,107,0,.2);border-radius:16px;padding:32px 20px 24px;
+  text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.3);
+}
+.rest-icon{font-size:48px;margin-bottom:14px;}
+.rest-ttl{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;color:var(--orange);}
+.rest-desc{color:var(--txt2);font-size:13px;margin-top:12px;line-height:1.75;}
+
+/* Alternative workout section on rest day */
+.alt-section{margin-top:20px;text-align:left;}
+.alt-label{
+  font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);
+  text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.alt-label::after{content:'';flex:1;height:1px;background:var(--bdr);}
+.alt-card{
+  background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+  overflow:hidden;margin-bottom:8px;cursor:pointer;transition:border-color .2s;
+  position:relative;
+}
+.alt-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--blue);opacity:0;transition:opacity .25s;
+}
+.alt-card.done{border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.04);}
+.alt-card.done::before,.alt-card:hover::before{opacity:1;}
+.alt-card:hover{border-color:rgba(96,165,250,.25);}
+.alt-main{display:flex;align-items:flex-start;gap:12px;padding:13px 14px 10px;}
+.alt-chk{
+  width:24px;height:24px;flex-shrink:0;margin-top:1px;
+  border:1.5px solid var(--bdr2);border-radius:7px;background:var(--surf);
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.alt-card.done .alt-chk{background:var(--blue);border-color:var(--blue);}
+.alt-chk svg{display:none;}
+.alt-card.done .alt-chk svg{display:block;}
+.alt-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);min-width:22px;padding-top:3px;letter-spacing:.5px;}
+.alt-body{flex:1;min-width:0;}
+.alt-name{font-weight:600;font-size:14px;line-height:1.3;transition:color .2s;}
+.alt-card.done .alt-name{text-decoration:line-through;color:var(--txt3);}
+.alt-tags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;}
+.tag-b{font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:.3px;text-transform:uppercase;background:var(--blue2);color:var(--blue);}
+.alt-tip{
+  margin:0 14px 12px 50px;padding:9px 13px;
+  background:rgba(96,165,250,.04);border:1px solid rgba(96,165,250,.15);
+  border-radius:9px;display:flex;align-items:flex-start;gap:8px;
+}
+.alt-note{font-size:10px;font-weight:700;color:var(--txt3);padding:8px 14px 10px 50px;letter-spacing:.3px;}
+
+/* Exercise Cards */
+.ex-grid{display:flex;flex-direction:column;gap:8px;}
+.ex-card{
+  background:var(--card);border:1px solid var(--bdr);border-radius:14px;
+  overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s;
+  position:relative;box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.ex-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);opacity:0;transition:opacity .25s;}
+.ex-card:hover{border-color:rgba(255,107,0,.25);transform:translateX(2px);box-shadow:0 4px 16px rgba(0,0,0,.45);}
+.ex-card:hover::before,.ex-card.done::before{opacity:1;}
+.ex-card.done{background:rgba(52,211,153,.04);border-color:rgba(52,211,153,.2);}
+.ex-card.done::before{background:var(--green);}
+.ex-main{display:flex;align-items:flex-start;gap:12px;padding:14px 14px 10px;}
+.chk{
+  width:24px;height:24px;flex-shrink:0;margin-top:1px;
+  border:1.5px solid var(--bdr2);border-radius:7px;background:var(--surf);
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.ex-card.done .chk{background:var(--green);border-color:var(--green);}
+.chk svg{display:none;}
+.ex-card.done .chk svg{display:block;}
+.ex-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);min-width:22px;padding-top:3px;letter-spacing:.5px;transition:color .2s;}
+.ex-card:hover .ex-num{color:var(--orange);}
+.ex-card.done .ex-num{color:var(--green);}
+.ex-body{flex:1;min-width:0;}
+.ex-name{font-weight:600;font-size:14px;line-height:1.3;transition:color .2s;}
+.ex-card.done .ex-name{text-decoration:line-through;color:var(--txt3);}
+.ex-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;letter-spacing:.3px;text-transform:uppercase;}
+.t-s{background:var(--orange2);color:var(--orange);}
+.t-r{background:rgba(255,255,255,.06);color:var(--txt2);}
+.t-m{background:rgba(255,255,255,.04);color:var(--txt3);}
+.ex-tip{
+  margin:0 14px 12px 50px;padding:9px 13px;
+  background:rgba(255,255,255,.024);border:1px solid var(--bdr);
+  border-radius:9px;display:flex;align-items:flex-start;gap:8px;
+}
+.tip-icon{font-size:12px;flex-shrink:0;margin-top:1px;}
+.tip-text{font-size:11px;color:var(--txt2);line-height:1.6;font-style:italic;}
+
+/* Toolbar */
+.toolbar{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+  padding:16px;margin-top:24px;display:flex;flex-direction:column;gap:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.toolbar-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.toolbar-info-title{font-weight:600;font-size:13px;}
+.toolbar-info-sub{font-size:11px;color:var(--txt3);margin-top:2px;}
+.countdown{
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--orange);
+  background:var(--orange2);padding:5px 10px;border-radius:7px;
+  border:1px solid rgba(255,107,0,.18);white-space:nowrap;flex-shrink:0;
+}
+.btn-reset{
+  width:100%;padding:12px;background:transparent;
+  border:1px solid var(--bdr2);color:var(--txt2);
+  font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  border-radius:10px;cursor:pointer;transition:.2s;
+}
+.btn-reset:hover{border-color:var(--orange);color:var(--orange);}
+
+/* ─── HISTORY PAGE ─── */
+.hist-wrap{padding:20px 16px 0;}
+.hist-hdr{
+  margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.hist-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;}
+.hist-title span{color:var(--orange);}
+.hist-sub{font-size:11px;color:var(--txt3);margin-top:4px;}
+.btn-clr{
+  padding:8px 14px;background:transparent;border:1px solid var(--bdr2);
+  color:var(--txt3);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  border-radius:8px;cursor:pointer;transition:.2s;flex-shrink:0;
+}
+.btn-clr:hover{border-color:var(--orange);color:var(--orange);}
+.year-sec{margin-bottom:8px;}
+.year-label{
+  font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--txt3);
+  margin-bottom:10px;display:flex;align-items:center;gap:10px;
+}
+.year-label::after{content:'';flex:1;height:1px;background:var(--bdr);}
+
+/* Month Accordion */
+.mc{
+  background:var(--card);border:1px solid var(--bdr);border-radius:16px;
+  overflow:hidden;margin-bottom:8px;transition:border-color .2s,box-shadow .2s;
+  box-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+.mc:hover{border-color:var(--bdr2);box-shadow:0 4px 18px rgba(0,0,0,.45);}
+.mc-hdr{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;gap:12px;}
+.mc-left{display:flex;align-items:center;gap:12px;}
+.mc-dot{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;
+}
+.mc-dot.live{background:var(--orange);color:#0a0a0a;}
+.mc-dot.has{border:1px solid var(--bdr2);color:var(--txt2);}
+.mc-dot.empty{border:1px dashed var(--bdr);color:var(--txt3);}
+.mc-name{font-weight:700;font-size:16px;}
+.mc-sub{font-size:11px;color:var(--txt3);margin-top:2px;}
+.mc-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ring-wrap{position:relative;width:46px;height:46px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.r-bg{fill:none;stroke:var(--bdr2);stroke-width:4;}
+.r-fg{fill:none;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .7s ease;}
+.ring-lbl{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:.5px;
+}
+.mc-arrow{color:var(--txt3);font-size:16px;transition:transform .3s;}
+.mc.open .mc-arrow{transform:rotate(180deg);}
+.mc-body{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1);}
+.mc.open .mc-body{max-height:900px;}
+.mc-inner{padding:4px 16px 16px;}
+.mc-divider{height:1px;background:var(--bdr);margin-bottom:14px;}
+.hw{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr);}
+.hw:last-child{border-bottom:none;}
+.hw-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);min-width:52px;letter-spacing:.5px;}
+.hw-mid{flex:1;min-width:0;}
+.hw-name{font-size:11px;font-weight:500;color:var(--txt2);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hw-bar-wrap{height:5px;background:var(--bdr2);border-radius:99px;overflow:hidden;}
+.hw-bar{height:100%;border-radius:99px;}
+.hw-pct{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px;min-width:38px;text-align:right;}
+.hw-date{font-size:10px;color:var(--txt3);min-width:36px;text-align:right;}
+.badge-live{
+  font-size:9px;font-weight:700;background:var(--orange2);color:var(--orange);
+  padding:2px 7px;border-radius:4px;letter-spacing:.5px;margin-left:6px;text-transform:uppercase;
+}
+.empty-mc{text-align:center;padding:20px;font-size:12px;color:var(--txt3);}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:90px;left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--orange);color:#0a0a0a;
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;
+  padding:12px 28px;border-radius:12px;z-index:9999;pointer-events:none;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s;
+  opacity:0;white-space:nowrap;box-shadow:0 8px 32px rgba(255,107,0,.35);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--surf);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span class="hero-badge-text">No Excuses. Just Results.</span>
+    </div>
+    <div class="hero-name">
+      <span class="l1">JOVAN</span>
+      <span class="l2">GRIND</span>
+      <span class="l3">TRACKER</span>
+    </div>
+    <p class="hero-sub">Your personal coach. Track every rep, build the habit, become unstoppable.</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val" id="hs-streak">0</div><div class="hstat-lbl">Day Streak</div></div>
+      <div class="hstat"><div class="hstat-val" id="hs-done">0</div><div class="hstat-lbl">Sessions</div></div>
+      <div class="hstat"><div class="hstat-val" id="hs-month">0%</div><div class="hstat-lbl">This Month</div></div>
+    </div>
+    <div class="hero-cta">
+      <button class="btn-p" onclick="go('workout')">START THE GRIND &nbsp;→</button>
+    </div>
+  </div>
+  <div class="home-body">
+    <div style="height:24px"></div>
+    <div class="sec-hdr">This Week's Snapshot</div>
+    <div id="home-snap"></div>
+    <div style="height:24px"></div>
+    <div class="sec-hdr">Monthly Overview</div>
+    <div id="home-monthly"></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ══════════ WORKOUT ══════════ -->
+<div class="page" id="page-workout">
+  <div class="wk-wrap">
+    <div class="wk-hdr">
+      <div class="wk-title">WEEK <span id="wk-num">1</span></div>
+      <div class="wk-phase" id="wk-phase">Beginner Phase</div>
+    </div>
+    <div class="prog-wrap">
+      <span class="prog-lbl">Progress</span>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <span class="prog-pct" id="progPct">0%</span>
+    </div>
+    <div class="scroll-tabs" id="weekTabs"></div>
+    <div class="scroll-tabs" id="dayTabs"></div>
+    <div id="dayView"></div>
+    <div class="toolbar">
+      <div class="toolbar-top">
+        <div>
+          <div class="toolbar-info-title">Auto-Reset Active</div>
+          <div class="toolbar-info-sub">Resets every 7 days & saves to history</div>
+        </div>
+        <div class="countdown" id="countdown">↺ —</div>
+      </div>
+      <button class="btn-reset" onclick="manualReset()">↺ Reset Week & Save to History</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HISTORY ══════════ -->
+<div class="page" id="page-history">
+  <div class="hist-wrap">
+    <div class="hist-hdr">
+      <div>
+        <div class="hist-title">MONTHLY <span>HISTORY</span></div>
+        <div class="hist-sub">Jan 2026 — Present · All months tracked</div>
+      </div>
+      <button class="btn-clr" onclick="clearHist()">Clear Data</button>
+    </div>
+    <div id="histContent"></div>
+  </div>
+</div>
+
+<!-- ══════════ BOTTOM NAV ══════════ -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" id="nav-home" onclick="go('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    Home
+  </button>
+  <button class="bnav-btn" id="nav-workout" onclick="go('workout')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+    </svg>
+    Tracker
+  </button>
+  <button class="bnav-btn" id="nav-history" onclick="go('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
+    History
+  </button>
+</nav>
+
+<script>
+/* ═══════════════════════════════════
+   PROGRAM DATA
+═══════════════════════════════════ */
+const PROG = { weeks: [
+  { l:'WEEK 1', s:'Beginner', days: [
+    { lb:'Day 1', ti:'Push + Core', t:'w', ex:[
+      {id:'w1d1e1',n:'Push Ups',sets:2,r:'8 reps',m:'Chest',tip:'Keep your core tight and body in a straight line. Lower slowly in 2 seconds, explode up.'},
+      {id:'w1d1e2',n:'Pike Push Ups',sets:1,r:'6 reps',m:'Shoulders',tip:'Form an inverted V with hips high. Lower your head toward the floor between your hands, then push back up.'},
+      {id:'w1d1e3',n:'Tricep Dips',sets:1,r:'8 reps',m:'Triceps',tip:'Use a sturdy chair. Keep elbows pointing straight back. Lower until arms are at 90°.'},
+      {id:'w1d1e4',n:'Crunches',sets:1,r:'10 reps',m:'Core',tip:"Don't pull your neck. Lift shoulder blades using abs. Exhale on the way up."},
+      {id:'w1d1e5',n:'Plank Hold',sets:1,r:'30 sec',m:'Core',tip:'Keep hips level — not sagging or raised. Squeeze glutes and abs. Breathe steadily.'},
+    ]},
+    { lb:'Day 2', ti:'Legs + Cardio', t:'w', ex:[
+      {id:'w1d2e1',n:'Jumping Jacks',sets:1,r:'20 reps',m:'Cardio',tip:'Warm-up pace. Stay light on feet, land softly. Arms fully extend overhead on each jump.'},
+      {id:'w1d2e2',n:'Squats',sets:2,r:'10 reps',m:'Quads',tip:'Feet shoulder-width, toes slightly out. Chest up, knees track over toes. Thighs parallel to floor.'},
+      {id:'w1d2e3',n:'Bulgarian Split Squats',sets:1,r:'6 each leg',m:'Glutes',tip:'Rear foot elevated on a chair. Step far enough forward so front knee stays behind toes as you lower.'},
+    ]},
+    { lb:'Day 3', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w1d3a1',n:'Brisk Walk',dur:'20–30 min',tip:'Walk at a pace where you can talk but feel your heart rate slightly elevated. Swing your arms naturally. Great for active recovery and burning extra calories without taxing muscles.'},
+        {id:'w1d3a2',n:'Light Jog',dur:'10–15 min',tip:'Easy conversational pace — you should be able to speak full sentences. Focus on landing softly mid-foot. This stimulates blood flow to sore muscles and speeds up recovery.'},
+      ]
+    },
+    { lb:'Day 4', ti:'Pull + Core', t:'w', ex:[
+      {id:'w1d4e1',n:'Inverted Table Rows',sets:2,r:'8 reps',m:'Back',tip:'Lie under a sturdy table. Grip edge, body straight. Pull chest up to the table, squeeze back at top.'},
+      {id:'w1d4e2',n:'Crunches',sets:1,r:'10 reps',m:'Core',tip:'Slow and controlled — no momentum. Feel the ab contraction on every single rep.'},
+      {id:'w1d4e3',n:'Plank Hold',sets:1,r:'30 sec',m:'Core',tip:'If lower back sags, drop to knees and build up. Form matters more than duration.'},
+      {id:'w1d4e4',n:'Jumping Jacks',sets:1,r:'20 reps',m:'Cardio',tip:'Cooldown finisher. Moderate pace to bring your heart rate down gradually.'},
+    ]},
+    { lb:'Day 5', ti:'Full Body Circuit', t:'w', ex:[
+      {id:'w1d5e1',n:'Jumping Jacks',sets:1,r:'15 reps',m:'Cardio',tip:"Comfortable rhythm. This is your warm-up — don't sprint it."},
+      {id:'w1d5e2',n:'Push Ups',sets:1,r:'8 reps',m:'Chest',tip:'Full range of motion — chest near the floor on every rep. No half reps.'},
+      {id:'w1d5e3',n:'Squats',sets:1,r:'10 reps',m:'Quads',tip:'Same depth each rep. Pause at the bottom for 1 second.'},
+      {id:'w1d5e4',n:'Inverted Table Rows',sets:1,r:'8 reps',m:'Back',tip:'Pull elbows toward hips, not ears. Engage lats. Squeeze at the top.'},
+      {id:'w1d5e5',n:'Crunches',sets:1,r:'10 reps',m:'Core',tip:"Never strain the neck. Cross arms on chest or fingertips behind ears lightly."},
+      {id:'w1d5e6',n:'Plank Hold',sets:1,r:'30 sec',m:'Core',tip:'Finish strong. Hold position and breathe. This closes your first full circuit.'},
+    ]},
+    { lb:'Day 6', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w1d6a1',n:'Brisk Walk',dur:'20–30 min',tip:'Keep a steady pace. Use this time to clear your mind. Active rest is better than complete inactivity — it helps flush lactic acid from muscles.'},
+        {id:'w1d6a2',n:'Light Jog',dur:'10–15 min',tip:'Optional easy jog. If legs feel heavy from Bulgarian Split Squats, a walk is perfectly fine instead.'},
+      ]
+    },
+    { lb:'Day 7', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w1d7a1',n:'Brisk Walk',dur:'20–30 min',tip:'End of Week 1 — celebrate with a relaxing walk. Reflect on your progress and prepare mentally for Week 2.'},
+        {id:'w1d7a2',n:'Light Jog',dur:'10–15 min',tip:'Optional jog if you feel energized. Keep it easy — next week training begins fresh.'},
+      ]
+    },
+  ]},
+  { l:'WEEK 2', s:'Building', days: [
+    { lb:'Day 1', ti:'Push + Core', t:'w', ex:[
+      {id:'w2d1e1',n:'Push Ups',sets:2,r:'10 reps',m:'Chest',tip:'Add a 2-second lowering phase. Slower descent = more muscle breakdown = more growth.'},
+      {id:'w2d1e2',n:'Pike Push Ups',sets:2,r:'7 reps',m:'Shoulders',tip:'Try to get forehead closer to floor each rep. Feel your shoulders doing the work.'},
+      {id:'w2d1e3',n:'Tricep Dips',sets:1,r:'10 reps',m:'Triceps',tip:"Don't let shoulders shrug up. Press through palms. Feel the back of your arms working."},
+      {id:'w2d1e4',n:'Crunches',sets:2,r:'12 reps',m:'Core',tip:'2 sec up, 2 sec down. No bouncing. Higher reps means maintaining more control.'},
+      {id:'w2d1e5',n:'Plank Hold',sets:1,r:'40 sec',m:'Core',tip:'10 more seconds than Week 1. Focus on breathing to make the extra time pass.'},
+    ]},
+    { lb:'Day 2', ti:'Legs + Cardio', t:'w', ex:[
+      {id:'w2d2e1',n:'Jumping Jacks',sets:1,r:'25 reps',m:'Cardio',tip:'Slightly faster pace than Week 1. Warm up your joints fully before squatting.'},
+      {id:'w2d2e2',n:'Squats',sets:2,r:'12 reps',m:'Quads',tip:'Go deeper if mobility allows. Aim for thighs slightly below parallel. Keep heels flat.'},
+      {id:'w2d2e3',n:'Bulgarian Split Squats',sets:1,r:'8 each leg',m:'Glutes',tip:'2 more reps per leg. Keep torso upright and drive through front heel as you stand.'},
+    ]},
+    { lb:'Day 3', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w2d3a1',n:'Brisk Walk',dur:'25–35 min',tip:"Week 2 rest walk — slightly longer than Week 1. You've built a base. Use this to stay active and let muscles repair fully."},
+        {id:'w2d3a2',n:'Light Jog',dur:'12–18 min',tip:'A short easy jog on rest day boosts circulation and keeps your metabolism active without breaking down muscle.'},
+      ]
+    },
+    { lb:'Day 4', ti:'Pull + Core', t:'w', ex:[
+      {id:'w2d4e1',n:'Inverted Table Rows',sets:2,r:'10 reps',m:'Back',tip:'Pause 1 full second at the top of each rep. Control the movement — do not swing up.'},
+      {id:'w2d4e2',n:'Crunches',sets:2,r:'12 reps',m:'Core',tip:'Hold top position 1 second before lowering. Feel the squeeze in your abs.'},
+      {id:'w2d4e3',n:'Plank Hold',sets:1,r:'40 sec',m:'Core',tip:'Try closing your eyes to focus on body tension rather than watching the clock.'},
+      {id:'w2d4e4',n:'Jumping Jacks',sets:1,r:'25 reps',m:'Cardio',tip:'Maintain good form even as a finisher. Arms fully extended each rep.'},
+    ]},
+    { lb:'Day 5', ti:'Full Body Circuit', t:'w', ex:[
+      {id:'w2d5e1',n:'Jumping Jacks',sets:1,r:'20 reps',m:'Cardio',tip:'Warm up properly. Match intensity to elevate your heart rate intentionally.'},
+      {id:'w2d5e2',n:'Push Ups',sets:1,r:'10 reps',m:'Chest',tip:'Perfect form on every rep. Quality always beats quantity.'},
+      {id:'w2d5e3',n:'Squats',sets:1,r:'12 reps',m:'Quads',tip:'Consistent depth across all reps. That consistency is what builds results.'},
+      {id:'w2d5e4',n:'Inverted Table Rows',sets:1,r:'10 reps',m:'Back',tip:'Retract shoulder blades before pulling. Keeps your back engaged and safe.'},
+      {id:'w2d5e5',n:'Crunches',sets:1,r:'12 reps',m:'Core',tip:'Breathe out forcefully at the top to activate more core muscle fibers.'},
+      {id:'w2d5e6',n:'Plank Hold',sets:1,r:'40 sec',m:'Core',tip:'Contract everything — abs, glutes, quads. Full-body tension makes it easier.'},
+      {id:'w2d5e7',n:'Bulgarian Split Squats',sets:1,r:'6 each leg',m:'Glutes',tip:'Circuit finisher. Take time between sides. Solid form on every rep.'},
+    ]},
+    { lb:'Day 6', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w2d6a1',n:'Brisk Walk',dur:'25–35 min',tip:'Post-circuit rest day walk. Your whole body worked hard on Day 5 — this keeps you mobile without adding stress.'},
+        {id:'w2d6a2',n:'Light Jog',dur:'12–18 min',tip:'Easy jog if feeling good. If legs are sore from Bulgarian Split Squats, just walk instead.'},
+      ]
+    },
+    { lb:'Day 7', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w2d7a1',n:'Brisk Walk',dur:'25–35 min',tip:'Final rest day of Week 2. Use the walk to prepare mentally — Week 3 brings 3-set training days.'},
+        {id:'w2d7a2',n:'Light Jog',dur:'12–18 min',tip:'Optional jog. Keep it genuinely easy. Your body is rebuilding — trust the process.'},
+      ]
+    },
+  ]},
+  { l:'WEEK 3', s:'Intermediate', days: [
+    { lb:'Day 1', ti:'Push + Core', t:'w', ex:[
+      {id:'w3d1e1',n:'Push Ups',sets:3,r:'10 reps',m:'Chest',tip:'3 sets now. Rest 60 sec between sets. Inhale on the way down, exhale on the push.'},
+      {id:'w3d1e2',n:'Pike Push Ups',sets:2,r:'8 reps',m:'Shoulders',tip:'Head below hands each rep. Think of it as pressing vertically, not forward.'},
+      {id:'w3d1e3',n:'Tricep Dips',sets:2,r:'10 reps',m:'Triceps',tip:'Full lockout at the top — straighten arms completely to fully contract the triceps.'},
+      {id:'w3d1e4',n:'Crunches',sets:2,r:'15 reps',m:'Core',tip:"Higher rep count. Keep tempo steady — don't rush to finish the set."},
+      {id:'w3d1e5',n:'Plank Hold',sets:2,r:'45 sec',m:'Core',tip:'Two rounds with 20 sec rest between. You have doubled your Week 1 duration.'},
+    ]},
+    { lb:'Day 2', ti:'Legs + Cardio', t:'w', ex:[
+      {id:'w3d2e1',n:'Jumping Jacks',sets:2,r:'25 reps',m:'Cardio',tip:'Two sets, minimal rest between. Elevate your heart rate intentionally before squats.'},
+      {id:'w3d2e2',n:'Squats',sets:3,r:'15 reps',m:'Quads',tip:'3×15 is serious volume. Keep knees from caving inward. Drive through the whole foot.'},
+      {id:'w3d2e3',n:'Bulgarian Split Squats',sets:2,r:'8 each leg',m:'Glutes',tip:'Two working sets. If balance is hard, touch a wall lightly. Full depth on every rep.'},
+    ]},
+    { lb:'Day 3', ti:'Active Rest', t:'r',
+      alt:[
+        {id:'w3d3a1',n:'Brisk Walk',dur:'30–40 min',tip:"Week 3 is your hardest week so far. This walk is essential — don't skip it. Moving at a moderate pace reduces soreness, improves blood flow, and sets you up for a strong Day 4."},
+        {id:'w3d3a2',n:'Light Jog',dur:'15–20 min',tip:'If you felt strong through Week 3 workouts, a slightly longer jog is fine. Keep the pace easy — you should be able to hold a conversation throughout.'},
+      ]
+    },
+    { lb:'Day 4', ti:'Pull + Core', t:'w', ex:[
+      {id:'w3d4e1',n:'Inverted Table Rows',sets:3,r:'10 reps',m:'Back',tip:'Try feet elevated on a chair this week. More horizontal = harder. Feel the difference.'},
+      {id:'w3d4e2',n:'Crunches',sets:2,r:'15 reps',m:'Core',tip:'Add a slight rotation at the top — elbow to opposite knee — for oblique work.'},
+      {id:'w3d4e3',n:'Plank Hold',sets:2,r:'45 sec',m:'Core',tip:'Try shoulder taps while holding — tap left, tap right, keep hips still.'},
+      {id:'w3d4e4',n:'Jumping Jacks',sets:1,r:'25 reps',m:'Cardio',tip:'Keep energy up. This is the finisher. Strong close to a strong session.'},
+    ]},
+    { lb:'Day 5', ti:'Full Body Circuit', t:'w', ex:[
+      {id:'w3d5e1',n:'Jumping Jacks',sets:1,r:'25 reps',m:'Cardio',tip:'High energy from rep 1. Get blood flowing before the full circuit hits.'},
+      {id:'w3d5e2',n:'Push Ups',sets:2,r:'10 reps',m:'Chest',tip:'Two sets in circuit — rest 45 sec before moving on to next exercise.'},
+      {id:'w3d5e3',n:'Squats',sets:2,r:'15 reps',m:'Quads',tip:'Same depth every single rep. Consistency is what transforms the body.'},
+      {id:'w3d5e4',n:'Inverted Table Rows',sets:2,r:'10 reps',m:'Back',tip:'Pull explosively, lower under control. Power up, slow down.'},
+      {id:'w3d5e5',n:'Bulgarian Split Squats',sets:1,r:'8 each leg',m:'Glutes',tip:'One working set. Make it count — full range of motion, full control.'},
+      {id:'w3d5e6',n:'Crunches',sets:2,r:'15 reps',m:'Core',tip:"Near end of circuit. Keep ab tension even when you're tired."},
+      {id:'w3d5e7',n:'Plank Hold',sets:1,r:'45 sec',m:'Core',tip:'Last move. Dig deep and hold — this is where mental strength is built.'},
+      {id:'w3d5e8',n:'Pike Push Ups',sets:1,r:'8 reps',m:'Shoulders',tip:'Bonus finisher. Arms fully extended at top, head through arms at bottom.'},
+    ]},
+    { lb:'Day 6', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w3d6a1',n:'Brisk Walk',dur:'30–40 min',tip:'Post-circuit rest walk. Week 3 circuit was the hardest yet. Walking helps your body flush out soreness and recover actively.'},
+        {id:'w3d6a2',n:'Light Jog',dur:'15–20 min',tip:'Optional. Only jog if you genuinely feel recovered. Listening to your body is a skill — use it.'},
+      ]
+    },
+    { lb:'Day 7', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w3d7a1',n:'Brisk Walk',dur:'30–40 min',tip:'Last rest day before Week 4 — the final push. Use this walk to visualize completing the full program. Mental prep is part of training.'},
+        {id:'w3d7a2',n:'Light Jog',dur:'15–20 min',tip:'Easy optional jog to stay loose. Week 4 starts fresh — arrive rested and ready.'},
+      ]
+    },
+  ]},
+  { l:'WEEK 4', s:'Full Program', days: [
+    { lb:'Day 1', ti:'Push + Core', t:'w', ex:[
+      {id:'w4d1e1',n:'Push Ups',sets:3,r:'12 reps',m:'Chest',tip:'Max effort week. If form breaks before 12, drop to knees and finish. Form always beats reps.'},
+      {id:'w4d1e2',n:'Pike Push Ups',sets:2,r:'8 reps',m:'Shoulders',tip:"Week 4 — push for forehead-to-floor depth. You've built to this range of motion."},
+      {id:'w4d1e3',n:'Tricep Dips',sets:2,r:'10 reps',m:'Triceps',tip:'3 seconds down, pause, press up. Slow reps build real, lasting strength.'},
+      {id:'w4d1e4',n:'Crunches',sets:2,r:'15 reps',m:'Core',tip:'Your core is stronger now. Add a 1-second hold at the top of every rep.'},
+      {id:'w4d1e5',n:'Plank Hold',sets:2,r:'1 min',m:'Core',tip:'Full minute, twice. You started at 30 seconds — this is your progress made visible.'},
+    ]},
+    { lb:'Day 2', ti:'Legs + Cardio', t:'w', ex:[
+      {id:'w4d2e1',n:'Jumping Jacks',sets:2,r:'25 reps',m:'Cardio',tip:'High energy. Notice how much easier cardio feels compared to Week 1.'},
+      {id:'w4d2e2',n:'Squats',sets:3,r:'15 reps',m:'Quads',tip:'Add a 2-second pause at the bottom. Kills momentum, maximizes tension.'},
+      {id:'w4d2e3',n:'Bulgarian Split Squats',sets:2,r:'8 each leg',m:'Glutes',tip:'Program finale for legs. Full depth, full control. Feel the stretch at the bottom.'},
+    ]},
+    { lb:'Day 3', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w4d3a1',n:'Brisk Walk',dur:'30–40 min',tip:"Week 4 rest day — you're in the final stretch. A good walk keeps your metabolism up and legs fresh for Day 4. Reflect on how much stronger you are since Day 1."},
+        {id:'w4d3a2',n:'Light Jog',dur:'15–20 min',tip:"Optional easy jog. Week 4 is demanding — only jog if you genuinely feel like it. Don't force it."},
+      ]
+    },
+    { lb:'Day 4', ti:'Pull + Core', t:'w', ex:[
+      {id:'w4d4e1',n:'Inverted Table Rows',sets:3,r:'12 reps',m:'Back',tip:'Feet elevated, full range of motion. 3×12 is your peak for this program — give everything.'},
+      {id:'w4d4e2',n:'Crunches',sets:3,r:'15 reps',m:'Core',tip:'3 working sets. Maintain perfect form to the very last rep.'},
+      {id:'w4d4e3',n:'Plank Hold',sets:2,r:'1 min',m:'Core',tip:"Hold strong. Think about how far you've come from your first 30-second plank."},
+      {id:'w4d4e4',n:'Jumping Jacks',sets:2,r:'25 reps',m:'Cardio',tip:"Two sets to close out. Keep the energy — you're almost done with the whole program."},
+    ]},
+    { lb:'Day 5', ti:'Full Body Circuit ×2', t:'w', ex:[
+      {id:'w4d5e1',n:'Jumping Jacks',sets:2,r:'25 reps',m:'Cardio',tip:'This is your final workout of the month. Full energy from the very first second.'},
+      {id:'w4d5e2',n:'Push Ups',sets:2,r:'12 reps',m:'Chest',tip:'Perfect form. Slow, deliberate, powerful. Every rep counts.'},
+      {id:'w4d5e3',n:'Squats',sets:2,r:'15 reps',m:'Quads',tip:'Last squats of the program — make them your best.'},
+      {id:'w4d5e4',n:'Inverted Table Rows',sets:2,r:'12 reps',m:'Back',tip:'Pull with your back, not arms. Elbows drive behind you. Strong and explosive.'},
+      {id:'w4d5e5',n:'Bulgarian Split Squats',sets:2,r:'8 each leg',m:'Glutes',tip:'Balance and strength are massively improved since Week 1. Show that progress.'},
+      {id:'w4d5e6',n:'Tricep Dips',sets:1,r:'10 reps',m:'Triceps',tip:'Full lockout at top. Your triceps have gotten stronger — feel the difference.'},
+      {id:'w4d5e7',n:'Crunches',sets:2,r:'15 reps',m:'Core',tip:'Almost there. Hold the squeeze 1 second at the top of every rep.'},
+      {id:'w4d5e8',n:'Pike Push Ups',sets:2,r:'8 reps',m:'Shoulders',tip:"Head through arms at the bottom. You've been building to this strength."},
+      {id:'w4d5e9',n:'Plank Hold',sets:2,r:'1 min',m:'Core',tip:'🔥 Final move. Full minute, twice. You finished the whole program, Jovan. Well done.'},
+    ]},
+    { lb:'Day 6', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w4d6a1',n:'Brisk Walk',dur:'30–40 min',tip:"Day 6 of your final week. A celebratory walk. You've completed 5 of 7 days of Week 4. Let your body breathe."},
+        {id:'w4d6a2',n:'Light Jog',dur:'15–20 min',tip:'Optional jog — keep it relaxed and enjoyable. This is active celebration, not training.'},
+      ]
+    },
+    { lb:'Day 7', ti:'Rest Day', t:'r',
+      alt:[
+        {id:'w4d7a1',n:'Brisk Walk',dur:'30–40 min',tip:"🏆 You completed the full 4-week GRIND program. This walk is your victory lap. Be proud, Jovan — you showed up every week."},
+        {id:'w4d7a2',n:'Light Jog',dur:'15–20 min',tip:'An optional jog to close out the month. Now decide: repeat with heavier targets, or start a new program. Either way — keep going.'},
+      ]
+    },
+  ]},
+]};
+
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const OGRADES = [
+  'linear-gradient(135deg,#FF6B00,#FF9500)',
+  'linear-gradient(135deg,#FF9500,#FF6B00)',
+  'linear-gradient(135deg,#FF6B00,#ff8c42)',
+  'linear-gradient(135deg,#ff8c42,#FF6B00)',
+];
+
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+const KY = 'grind_jovan_v1', HK = 'grind_jovan_hist';
+let S = { aw:0, ad:0, ch:{}, ws:Date.now() };
+let H = [];
+
+function load() {
+  try {
+    const r = localStorage.getItem(KY);
+    if (r) { const s=JSON.parse(r); S.aw=s.aw||0; S.ad=s.ad||0; S.ch=s.ch||{}; S.ws=s.ws||Date.now(); }
+    else S.ws = Date.now();
+    const h = localStorage.getItem(HK); if (h) H = JSON.parse(h);
+    autoReset();
+  } catch(e) { S.ws = Date.now(); }
+}
+function sv() { localStorage.setItem(KY, JSON.stringify(S)); }
+function svH() { localStorage.setItem(HK, JSON.stringify(H)); }
+
+function autoReset() {
+  if (Date.now() - S.ws >= 7*24*60*60*1000) { snap(); doReset(false); }
+}
+function snap() {
+  const now = new Date(), m = now.getMonth(), y = now.getFullYear();
+  const pct = wPct(S.aw);
+  let me = H.find(h => h.m===m && h.y===y);
+  if (!me) { me = {m, y, wks:[]}; H.unshift(me); }
+  const ex = me.wks.find(w => w.wi===S.aw);
+  const dt = now.toLocaleDateString('en-PH',{month:'short',day:'numeric'});
+  if (ex) { ex.p=pct; ex.d=dt; } else me.wks.push({wi:S.aw, p:pct, d:dt});
+  svH();
+}
+function doReset(manual=true) {
+  if (manual) snap();
+  S.ch = {}; S.ws = Date.now(); sv(); render();
+  showToast(manual ? 'SAVED & RESET! 🎯' : 'AUTO-RESET!');
+}
+function manualReset() {
+  if (!confirm('Save progress to history and reset this week?')) return;
+  doReset(true);
+}
+function clearHist() {
+  if (!confirm('Clear all history data? This cannot be undone.')) return;
+  H = []; svH(); renderHistory(); showToast('HISTORY CLEARED');
+}
+
+/* ═══════════════════════════════════
+   CALCULATIONS
+═══════════════════════════════════ */
+function wPct(wi) {
+  const w = PROG.weeks[wi]; let t=0, d=0;
+  w.days.forEach(dy => {
+    if (dy.ex) { t += dy.ex.length; d += dy.ex.filter(e => S.ch[e.id]).length; }
+    if (dy.alt) { t += dy.alt.length; d += dy.alt.filter(a => S.ch[a.id]).length; }
+  });
+  return t ? Math.round(d/t*100) : 0;
+}
+function totDone() {
+  let n = 0;
+  PROG.weeks.forEach(w => w.days.forEach(d => {
+    if (d.ex) d.ex.forEach(e => { if (S.ch[e.id]) n++; });
+    if (d.alt) d.alt.forEach(a => { if (S.ch[a.id]) n++; });
+  }));
+  return n;
+}
+function dayStreak() {
+  let n = 0;
+  PROG.weeks[S.aw].days.forEach(d => {
+    const hasAny = (d.ex && d.ex.some(e => S.ch[e.id])) || (d.alt && d.alt.some(a => S.ch[a.id]));
+    if (hasAny) n++;
+  });
+  return n;
+}
+function dDone(wi, di) {
+  const d = PROG.weeks[wi].days[di];
+  const exDone = !d.ex || d.ex.length === 0 || d.ex.every(e => S.ch[e.id]);
+  const altDone = !d.alt || d.alt.length === 0 || d.alt.some(a => S.ch[a.id]);
+  return exDone && altDone;
+}
+
+/* ═══════════════════════════════════
+   ROUTING
+═══════════════════════════════════ */
+function go(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+  if (name==='history') renderHistory();
+  if (name==='home') renderHome();
+  if (name==='workout') renderWorkout();
+}
+
+/* ═══════════════════════════════════
+   HOME
+═══════════════════════════════════ */
+function renderHome() {
+  document.getElementById('hs-streak').textContent = dayStreak();
+  document.getElementById('hs-done').textContent = totDone();
+  document.getElementById('hs-month').textContent = wPct(S.aw) + '%';
+
+  // Snapshot
+  const w = PROG.weeks[S.aw], pct = wPct(S.aw);
+  const wkDays = w.days.filter(d => d.t==='w');
+  const doneDays = wkDays.filter(d => d.ex && d.ex.every(e => S.ch[e.id])).length;
+  document.getElementById('home-snap').innerHTML = `
+    <div class="snap-card">
+      <div class="snap-top">
+        <div>
+          <div class="snap-week">${w.l} · ${w.s}</div>
+          <div class="snap-phase">Day ${S.ad+1} of ${w.days.length}</div>
+        </div>
+        <div class="snap-pct">${pct}%</div>
+      </div>
+      <div class="snap-bar-wrap"><div class="snap-bar" style="width:${pct}%"></div></div>
+      <div class="snap-days">
+        ${wkDays.map(d => `<div class="snap-dot" style="background:${d.ex&&d.ex.every(e=>S.ch[e.id])?'var(--orange)':'var(--bdr2)'}"></div>`).join('')}
+        <span class="snap-dot-lbl">${doneDays}/${wkDays.length} workout days done</span>
+      </div>
+      <button class="snap-go" onclick="go('workout')">Continue Training →</button>
+    </div>`;
+
+  // Monthly mini
+  const now = new Date(), cm = now.getMonth(), cy = now.getFullYear();
+  let html = '';
+  for (let i = 0; i < 3; i++) {
+    const d = new Date(cy, cm-i, 1), m = d.getMonth(), y = d.getFullYear();
+    const entry = H.find(h => h.m===m && h.y===y);
+    const lp = i===0 ? wPct(S.aw) : 0;
+    const sv = entry&&entry.wks.length ? Math.round(entry.wks.reduce((a,w)=>a+w.p,0)/entry.wks.length) : 0;
+    const avg = i===0 ? (entry&&entry.wks.length ? Math.round((sv+lp)/2) : lp) : sv;
+    const gr = OGRADES[i%OGRADES.length];
+    const oc = i===0 ? '#FF6B00' : i===1 ? '#FF9500' : '#ff8c42';
+    const isCur = i===0;
+    html += `<div class="month-mini">
+      <div class="mm-dot" style="background:${isCur?gr:'var(--surf)'};color:${isCur?'#07080f':'var(--txt2)'};border:${isCur?'none':'1.5px solid var(--bdr2)'};">${MN[m]}</div>
+      <div class="mm-body">
+        <div class="mm-name">${MN[m]} ${y}${isCur?'<span class="badge-cur">LIVE</span>':''}</div>
+        <div class="mm-bar-wrap"><div class="mm-bar" style="width:${avg}%;background:${gr}"></div></div>
+      </div>
+      <div class="mm-pct" style="color:${oc}">${avg}%</div>
+    </div>`;
+  }
+  document.getElementById('home-monthly').innerHTML = html;
+}
+
+/* ═══════════════════════════════════
+   WORKOUT
+═══════════════════════════════════ */
+function renderWorkout() {
+  const w = PROG.weeks[S.aw];
+  document.getElementById('wk-num').textContent = S.aw + 1;
+  document.getElementById('wk-phase').textContent = w.s + ' Phase';
+  renderWTabs(); renderDTabs(); renderDay(); updProg();
+}
+function renderWTabs() {
+  document.getElementById('weekTabs').innerHTML = PROG.weeks.map((w,i) => `
+    <button class="wtab ${i===S.aw?'active':''}" onclick="selW(${i})">
+      <span class="wn">W${i+1}</span><span class="ws">${w.s}</span>
+    </button>`).join('');
+}
+function renderDTabs() {
+  const w = PROG.weeks[S.aw];
+  document.getElementById('dayTabs').innerHTML = w.days.map((d,i) => {
+    let c = i===S.ad ? 'active' : '';
+    if (d.t==='r') c += ' rest';
+    else if (dDone(S.aw,i)) c += ' done';
+    return `<button class="dtab ${c}" onclick="selD(${i})">${d.lb}</button>`;
+  }).join('');
+}
+function renderDay() {
+  const day = PROG.weeks[S.aw].days[S.ad];
+  const c = document.getElementById('dayView');
+
+  if (day.t === 'r') {
+    // Count alt completions
+    const altTotal = day.alt ? day.alt.length : 0;
+    const altDone = day.alt ? day.alt.filter(a => S.ch[a.id]).length : 0;
+    c.innerHTML = `
+      <div class="dview">
+        <div class="rest-card">
+          <div class="rest-icon">💤</div>
+          <div class="rest-ttl">Rest & Recover</div>
+          <div class="rest-desc">
+            Recovery is where growth happens.<br>
+            Hydrate well. Sleep 7–8 hours.<br>
+            Come back stronger tomorrow.
+          </div>
+          ${day.alt ? `
+          <div class="alt-section">
+            <div class="alt-label">Optional Active Recovery</div>
+            <div style="background:var(--blue2);border:1px solid rgba(96,165,250,.15);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+              <span style="font-size:11px;color:var(--blue);font-weight:600;">👟 Choose one or both — these are optional but recommended</span>
+            </div>
+            ${day.alt.map((a, idx) => `
+              <div class="alt-card ${S.ch[a.id]?'done':''}" onclick="togAlt('${a.id}')">
+                <div class="alt-main">
+                  <div class="alt-chk">
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5l2.8 2.8 5.2-5.6" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="alt-num">${String(idx+1).padStart(2,'0')}</div>
+                  <div class="alt-body">
+                    <div class="alt-name">${a.n}</div>
+                    <div class="alt-tags">
+                      <span class="tag-b">🏃 ${a.dur}</span>
+                      <span style="font-size:10px;background:rgba(255,255,255,.04);color:var(--txt3);padding:2px 8px;border-radius:5px;font-weight:600;">OPTIONAL</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="alt-tip">
+                  <span class="tip-icon">💡</span>
+                  <span class="tip-text">${a.tip}</span>
+                </div>
+              </div>`).join('')}
+          </div>` : ''}
+        </div>
+      </div>`;
+    return;
+  }
+
+  const tot = day.ex.length, dn = day.ex.filter(e => S.ch[e.id]).length, all = dn===tot;
+  c.innerHTML = `
+    <div class="dview">
+      <div class="day-hdr">
+        <div>
+          <div class="day-title">${day.ti}</div>
+          <div class="day-meta">${PROG.weeks[S.aw].s} · ${day.lb}</div>
+        </div>
+        <div class="day-bdg ${all?'done':''}">${all?'✓ DONE':`${dn}/${tot}`}</div>
+      </div>
+      <div class="ex-grid">
+        ${day.ex.map((ex,i) => `
+          <div class="ex-card ${S.ch[ex.id]?'done':''}" onclick="toggle('${ex.id}')">
+            <div class="ex-main">
+              <div class="chk">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M1.5 6l3 3 6-6" stroke="#07080f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
+              <div class="ex-body">
+                <div class="ex-name">${ex.n}</div>
+                <div class="ex-tags">
+                  <span class="tag t-s">${ex.sets} set${ex.sets>1?'s':''}</span>
+                  <span class="tag t-r">${ex.r}</span>
+                  <span class="tag t-m">${ex.m}</span>
+                </div>
+              </div>
+            </div>
+            ${ex.tip ? `<div class="ex-tip"><span class="tip-icon">💡</span><span class="tip-text">${ex.tip}</span></div>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+function updProg() {
+  const p = wPct(S.aw);
+  document.getElementById('progFill').style.width = p + '%';
+  document.getElementById('progPct').textContent = p + '%';
+}
+
+/* ═══════════════════════════════════
+   HISTORY
+═══════════════════════════════════ */
+function renderHistory() {
+  const now = new Date(), cm = now.getMonth(), cy = now.getFullYear();
+  const startY = 2026;
+  let html = '';
+  for (let y = cy; y >= startY; y--) {
+    const mEnd = y===cy ? cm : 11;
+    html += `<div class="year-sec"><div class="year-label">${y}</div>`;
+    for (let m = mEnd; m >= 0; m--) {
+      const isCur = m===cm && y===cy;
+      const entry = H.find(h => h.m===m && h.y===y);
+      let wks = entry ? [...entry.wks] : [];
+      if (isCur) {
+        const lp = wPct(S.aw);
+        const ex = wks.find(w => w.wi===S.aw);
+        if (!ex) wks = [...wks, {wi:S.aw, p:lp, d:'Now', live:true}];
+      }
+      const has = wks.length > 0;
+      const avg = has ? Math.round(wks.reduce((a,w)=>a+w.p,0)/wks.length) : 0;
+      const rc = isCur ? 'var(--orange)' : has ? '#FF9500' : 'var(--txt3)';
+      const r=17, circ=2*Math.PI*r, off=circ-(avg/100)*circ;
+      const dc = isCur?'live':has?'has':'empty';
+      const ds = isCur?'background:var(--orange);color:#0a0a0a':has?'background:var(--card2);color:var(--txt2)':'';
+      html += `
+        <div class="mc" id="mc${m}${y}">
+          <div class="mc-hdr" onclick="tMC('mc${m}${y}')">
+            <div class="mc-left">
+              <div class="mc-dot ${dc}" style="${ds}">${MN[m]}</div>
+              <div>
+                <div class="mc-name">${MN[m]} ${y}${isCur?'<span class="badge-live">LIVE</span>':''}</div>
+                <div class="mc-sub">${has?`${wks.length} week${wks.length!==1?'s':''} logged · Avg ${avg}%`:'No workouts logged yet'}</div>
+              </div>
+            </div>
+            <div class="mc-right">
+              <div class="ring-wrap">
+                <svg width="46" height="46" viewBox="0 0 46 46">
+                  <circle class="r-bg" cx="23" cy="23" r="${r}"/>
+                  <circle class="r-fg" cx="23" cy="23" r="${r}" stroke="${rc}" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
+                </svg>
+                <div class="ring-lbl" style="color:${rc}">${avg}%</div>
+              </div>
+              <span class="mc-arrow">⌄</span>
+            </div>
+          </div>
+          <div class="mc-body">
+            <div class="mc-inner">
+              <div class="mc-divider"></div>
+              ${!has ? `<div class="empty-mc">No workouts logged for ${MN[m]} ${y} yet.<br>Complete exercises and reset week to save here.</div>` :
+                wks.map(w => {
+                  const wd = PROG.weeks[w.wi];
+                  const bg = w.live ? 'var(--orange)' : '#FF9500';
+                  const pc = w.live ? 'var(--orange)' : '#FF9500';
+                  return `<div class="hw">
+                    <span class="hw-lbl">W${w.wi+1}${w.live?' 🔴':''}</span>
+                    <div class="hw-mid">
+                      <div class="hw-name">${wd.l} · ${wd.s}</div>
+                      <div class="hw-bar-wrap"><div class="hw-bar" style="width:${w.p}%;background:${bg}"></div></div>
+                    </div>
+                    <span class="hw-pct" style="color:${pc}">${w.p}%</span>
+                    <span class="hw-date">${w.d}</span>
+                  </div>`;
+                }).join('')}
+            </div>
+          </div>
+        </div>`;
+    }
+    html += '</div>';
+  }
+  document.getElementById('histContent').innerHTML = html;
+  setTimeout(() => { const el = document.getElementById(`mc${cm}${cy}`); if(el) el.classList.add('open'); }, 120);
+}
+function tMC(id) { const el = document.getElementById(id); if(el) el.classList.toggle('open'); }
+
+/* ═══════════════════════════════════
+   INTERACTIONS
+═══════════════════════════════════ */
+function selW(i) { S.aw=i; S.ad=0; sv(); renderWorkout(); }
+function selD(i) { S.ad=i; sv(); renderDTabs(); renderDay(); }
+function toggle(id) {
+  S.ch[id] = !S.ch[id]; sv();
+  renderDay(); renderDTabs(); updProg(); renderHome();
+  const day = PROG.weeks[S.aw].days[S.ad];
+  if (day.ex && day.ex.every(e => S.ch[e.id])) showToast('DAY COMPLETE! 🔥');
+}
+function togAlt(id) {
+  S.ch[id] = !S.ch[id]; sv();
+  renderDay(); renderDTabs(); updProg(); renderHome();
+  const day = PROG.weeks[S.aw].days[S.ad];
+  if (day.alt && day.alt.some(a => S.ch[a.id])) showToast('ACTIVE RECOVERY DONE! 👟');
+}
+function updCdwn() {
+  const rem = Math.max(0, 7*24*60*60*1000 - (Date.now() - S.ws));
+  const d = Math.floor(rem/86400000), h = Math.floor(rem%86400000/3600000), m = Math.floor(rem%3600000/60000);
+  const el = document.getElementById('countdown'); if(el) el.textContent = `↺ ${d}d ${h}h ${m}m`;
+}
+let _tt;
+function showToast(msg) {
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+function render() { renderWorkout(); renderHome(); }
+load(); render(); updCdwn();
+setInterval(() => { updCdwn(); autoReset(); }, 60000);
+</script>
+<link rel="manifest" href="/Grind-app/manifest.json"/>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/Grind-app/sw.js')
+      .then(function() { console.log('[GRIND] PWA ready'); })
+      .catch(function(e) { console.warn('[GRIND] SW:', e); });
+  });
+}
+</script>
+</body>
+</html>
